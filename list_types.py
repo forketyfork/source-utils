@@ -1,12 +1,14 @@
 # coding=utf-8
-# Утилита для подсчёта файлов в структуре каталогов с разбивкой по расширениям
+# Utility for recursively counting files with breakdown by extension
 
 import sys
 from pathlib import Path
 
 if len(sys.argv) != 2:
-    print('Использование: python3 list_types.py <Имя каталога>')
+    print('Usage: python3 list_types.py <root directory name>')
     exit(0)
+
+root_dir = sys.argv[1]
 
 exts = dict()
 
@@ -21,7 +23,7 @@ def recursive_pass(directory):
                 exts[suffix] = exts.get(suffix, 0) + 1
 
 
-recursive_pass(Path(sys.argv[1]))
+recursive_pass(Path(root_dir))
 
 for ext in exts.keys():
-    print("%s: %d" % (ext, exts[ext]))
+    print("%s: %d files" % (ext, exts[ext]))

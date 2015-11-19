@@ -1,16 +1,18 @@
 # coding=utf-8
-# Утилита для подсчёта количества строк в исходных кодах
+# Utility for recursively calculating total line count in files with breakdown by extension
 
 import sys
 from pathlib import Path
 
 if len(sys.argv) != 4:
-    print('Использование: python3 count_lines.py <Имя каталога> <список расширений через запятую> '
-          '<список возможных кодировок через запятую>')
+    print('Usage: python3 count_lines.py <root directory name> <comma-separated extensions list> '
+          '<comma-separated encodings list>')
     exit(0)
 
+root_dir = sys.argv[1]
 exts = sys.argv[2].split(',')
 encodings = sys.argv[3].split(',')
+
 counts = dict()
 total = 0
 
@@ -22,7 +24,7 @@ def recursive_pass(directory):
         else:
             suffix = child.suffix.lower()[1:]
             if suffix in exts and not count_lines(child):
-                print("Не удалось подсчитать количество строк в файле: %s" % child)
+                print("Failed to count lines in file: %s" % child)
 
 
 def count_lines(file):
@@ -42,18 +44,18 @@ def count_lines_with_encoding(file, encoding):
         counts[suffix] = counts.get(suffix, 0) + line_count
         total = total + line_count
         return True
-    except:
+    except UnicodeDecodeError:
         return False
     finally:
         if f is not None:
             f.close()
 
 
-root_path = Path(sys.argv[1])
+root_path = Path(root_dir)
 
 recursive_pass(root_path)
 
 for ext in counts.keys():
-    print("%s: %d строк" % (ext, counts[ext]))
+    print("%s: %d lines" % (ext, counts[ext]))
 
-print("Итого: %d строк" % total)
+print("Total: %d lines" % total)
